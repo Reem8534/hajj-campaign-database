@@ -1,0 +1,154 @@
+drop table camp cascade constraints;
+drop table employees cascade constraints;
+drop table transportation cascade constraints;
+drop table Pilgrim cascade constraints;
+drop table trips cascade constraints;
+drop table Pilgrimphone cascade constraints;
+drop table board cascade constraints;
+
+
+
+Create table camp (
+Camp_num char(5) primary key,
+Type char(1) check(Type in('A','B','C')),
+Cost number(5),
+Location varchar2(30),
+No_of_beds number(2));
+
+Create table employees (
+ID char(10) primary key,
+Job_title varchar2(30),
+First_name varchar2(15),
+Middle_name varchar2(15), 
+Last_name varchar2(15),
+DOB date,
+Camp_num char(5),
+Supervisor_ID char(10),
+Foreign key (Camp_num) references camp(Camp_num),
+Foreign key (Supervisor_ID) references employees (ID));
+
+
+Create table trips (
+Trip_number number(4) primary key,
+destination varchar2(20),
+date_time date,
+start_location varchar2(20));
+
+
+Create table transportation (
+Vin varchar2(15)  ,
+Vehicle_type varchar(15),
+Driver_ID char(10),
+Trip_number number(4),
+PRIMARY KEY(VIN,TRIP_NUMBER),
+Foreign key (Driver_ID) references employees (ID),
+foreign key (Trip_number) references trips(Trip_number));
+
+
+
+Create table Pilgrim (
+ID char(10) primary key,
+D_O_B date,
+Sex char(1) ,
+first_name varchar2(15),
+Middle_name varchar2(15),
+Last_name varchar2(15),
+nationality varchar2(30),
+health_conditions varchar2(30),
+camp_number char(5), 
+Foreign key (Camp_number) references camp(camp_num));
+
+create table board (
+ID char(10), 
+VIN varchar2(15),
+Trip_number number(4),
+PRIMARY KEY( id,VIN,TRIP_NUMBER),
+Foreign key (Vin,trip_number) references transportation(Vin,trip_number),
+Foreign key (ID) references Pilgrim (ID));
+
+
+Create table PilgrimPhone (
+ID char(10),
+phone_num char(10),
+Constraint ID_phone_pk primary key (ID,phone_num),
+Foreign key (ID) references Pilgrim (ID));
+
+
+
+
+INSERT INTO camp VALUES('111SS','A',17000,'Mina',15);
+INSERT INTO camp VALUES('112SS','B',15000 ,'Mina',20);
+INSERT INTO camp VALUES('113SS','C',12000,' Mina ',30);
+
+
+INSERT INTO trips(Trip_number,destination,date_time,start_location) VALUES(3331, 'Arafah','19 07 2022','Mina');
+
+INSERT INTO trips(Trip_number,destination,date_time,start_location) VALUES(3332, 'Arafah','19 07 2022','Mina'
+);
+INSERT INTO trips(Trip_number,destination,date_time,start_location) VALUES(3333, 'Arafah','19 07 2022','Mina'
+);
+
+
+INSERT INTO employees(ID,Job_title,First_name,Middle_name,Last_name,DOB,camp_num,Supervisor_ID)
+VALUES('1104442221','Manager','saleh' ,'Ali','alharbi','05 01 1988','111SS','1104442221');
+
+INSERT INTO employees(ID,Job_title,First_name,Middle_name,Last_name,DOB,camp_num,Supervisor_ID)
+VALUES('1112222244','Driver','Ahmed' ,'Moath','Alsabih','09 01 1982','111SS','1104442221');
+
+INSERT INTO employees(ID,Job_title,First_name,Middle_name,Last_name,DOB,camp_num,Supervisor_ID)
+VALUES('111754543','Nurse','Abdulrahman' ,'khalid','alotibi','03 01 1985','112SS','1104442221');
+
+INSERT INTO employees(ID,Job_title,First_name,Middle_name,Last_name,DOB,Camp_num,Supervisor_ID)
+VALUES('1119243319','Doctor','Sauid' ,'Mohammed','aljami','03 01 1985','113SS','1104442221');
+
+
+INSERT INTO transportation(Vin,Vehicle_type,Driver_ID,Trip_number) VALUES('LN9184','Bus','1112222244',3331); 
+INSERT INTO transportation(Vin,Trip_number,Vehicle_type,Driver_ID) VALUES('LN9184',3332,'Bus','1112222244');
+INSERT INTO transportation(Vin,Trip_number,Vehicle_type,Driver_ID) VALUES('ET7132',3333,'Bus','1112222244');
+INSERT INTO transportation(Vin,Trip_number,Vehicle_type,Driver_ID) VALUES('BE5197',3331,'Bus','1112222244');
+
+INSERT INTO Pilgrim (ID,D_O_B,Sex,first_name, Middle_name, Last_name,nationality,health_conditions,camp_number)
+VALUES('1118739888','02 01 1998','F','Sara','Nawaf','Alotibi','Saudi','Good', '111SS');
+INSERT INTO Pilgrim (ID,D_O_B,Sex,first_name, Middle_name, Last_name,nationality,health_conditions,camp_number)
+VALUES('1113311561','03 01 1996','M','Rayan','Salam','alzahrani','Saudi','Good', '112SS');
+INSERT INTO Pilgrim (ID,D_O_B,Sex,first_name, Middle_name, Last_name,nationality,health_conditions,camp_number)
+VALUES('1113214321','04 01 1982','F','Norah','youssf','alqurashi','Egypt','Good', '113SS');
+
+insert into board values('1118739888', 'LN9184',3331);
+insert into board values('1113311561', 'ET7132',3333);
+insert into board values('1118739888', 'LN9184',3332);
+
+INSERT INTO PilgrimPhone (ID,phone_num) VALUES('1118739888','0504165844');
+INSERT INTO PilgrimPhone (ID,phone_num) VALUES('1118739888','0553587890');
+INSERT INTO PilgrimPhone (ID,phone_num) VALUES('1113311561','0550136549');
+INSERT INTO PilgrimPhone (ID,phone_num) VALUES('1113214321','0558126856');
+
+
+SELECT MAX (COST)
+FROM CAMP;
+
+SELECT CAMP_NUM
+FROM CAMP
+WHERE COST BETWEEN 12000 AND 15000;
+
+SELECT CAMP_NUM, COUNT (ID)
+FROM EMPLOYEES
+GROUP BY CAMP_NUM
+HAVING  COUNT (ID)>=2;
+
+
+SELECT camp_number, COUNT (ID)
+FROM Pilgrim
+WHERE SEX = 'F'
+GROUP BY camp_number;
+
+
+SELECT id
+FROM Pilgrim
+WHERE nationality <> 'Saudi';
+
+
+select trip_number
+from trips
+where date_time >'01-01-2022' 
+order by trip_number;
